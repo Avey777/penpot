@@ -28,7 +28,8 @@
   (ptk/reify ::update-guides
     ptk/WatchEvent
     (watch [it state _]
-      (let [page (wsh/lookup-page state)
+      (let [_ (.log js/console (clj->js guide))
+            page (wsh/lookup-page state)
             changes
             (-> (pcb/empty-changes it)
                 (pcb/with-page page)

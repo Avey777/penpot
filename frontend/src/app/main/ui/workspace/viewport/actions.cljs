@@ -105,7 +105,8 @@
   (mf/use-callback
    (mf/deps @hover @hover-ids selected @space?)
    (fn [bevent]
-     (let [event (.-nativeEvent bevent)
+     (let [_ (prn "on-move")
+           event (.-nativeEvent bevent)
            shift? (kbd/shift? event)
            mod?   (kbd/mod? event)
            left-click?   (= 1 (.-which event))]

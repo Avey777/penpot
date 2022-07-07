@@ -100,3 +100,14 @@
               (rx/mapcat #(rx/of (center-to-comment-thread thread)
                                  (dw/select-for-drawing :comments)
                                  (dcm/open-thread thread)))))))))
+
+(defn update-comment-position
+  [thread  [new-x new-y]]
+  (us/assert ::dcm/comment-thread thread)
+  (ptk/reify ::update-comment-position
+    ptk/UpdateEvent
+    (update [_ state]
+            (let [thread-id (:id thread)]
+              (update-in state [:comments-threads thread-id :position] {:x new-x :y new-y})
+              )
+      )))
