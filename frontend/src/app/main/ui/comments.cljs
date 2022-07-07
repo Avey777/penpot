@@ -361,10 +361,10 @@
         on-pointer-up
         (mf/use-callback
          (mf/deps (select-keys @state [:new-position-x :new-position-y :new-frame-id]))
-         (fn [event thread]
-           (on-buble-pos-update 
-            (st/emit! (dwcm/update-comment-position thread [pos-x pos-y]))
-            )))
+         (fn [_ thread]
+           (on-buble-pos-update
+            (println "--------->" [(:new-position-x @state) (:new-position-y @state)])
+            (st/emit! (dwcm/update-comment-thread-position thread [(:new-position-x @state) (:new-position-y @state)])))))
 
         on-lost-pointer-capture
         (mf/use-callback
@@ -373,7 +373,7 @@
            (mf/set-ref-val! dragging-ref false)
            (mf/set-ref-val! start-ref nil)
            (swap! state assoc :new-position nil)))
-        
+
         on-mouse-move
         (mf/use-callback
          (mf/deps position zoom)
@@ -423,8 +423,8 @@
         pos-x (or (:new-position-x @state)
                   (* (:x pos) zoom))
         pos-y (or (:new-position-y @state)
-               (* (:y pos) zoom))
-        
+                  (* (:y pos) zoom))
+
         on-click* (fn [event]
                     (dom/stop-propagation event)
                     (on-click thread))
@@ -436,7 +436,7 @@
 
         on-pointer-up* (fn [event]
                          (dom/stop-propagation event)
-                         (on-pointer-up event))
+                         (on-pointer-up event thread))
         on-mouse-move* (fn [event]
                          (dom/stop-propagation event)
                          (on-mouse-move event))]

@@ -10,6 +10,7 @@
    [app.main.data.comments :as dcm]
    [app.main.data.workspace :as dw]
    [app.main.data.workspace.common :as dwc]
+   [app.main.repo :as rp]
    [app.main.streams :as ms]
    [app.util.router :as rt]
    [beicon.core :as rx]
@@ -101,13 +102,19 @@
                                  (dw/select-for-drawing :comments)
                                  (dcm/open-thread thread)))))))))
 
-(defn update-comment-position
+(defn update-comment-thread-position
   [thread  [new-x new-y]]
   (us/assert ::dcm/comment-thread thread)
-  (ptk/reify ::update-comment-position
+  (ptk/reify ::update-comment-thread-position
     ptk/UpdateEvent
     (update [_ state]
-            (let [thread-id (:id thread)]
-              (update-in state [:comments-threads thread-id :position] {:x new-x :y new-y})
-              )
-      )))
+      (let [thread-id (:id thread)
+            _ (println ":::::::::::" (get-in state [:comment-threads thread-id :position]) {:x new-x :y new-y})]
+        (assoc-in state [:comment-threads thread-id :position] {:x new-x :y new-y})))
+
+    ptk/WatchEvent
+    (watch [_ state _]
+      (let [thread-id (:id thread)]
+        (->> (rp/mutation :update-comment-thread-position {:id thread-id :position {:x new-x :y new-y}})
+             (rx/catch #(rx/throw {:type :update-comment-thread-position}))
+             (rx/ignore))))))

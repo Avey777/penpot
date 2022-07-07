@@ -266,3 +266,23 @@
                   :code :not-allowed))
 
       (db/delete! conn :comment {:id id}))))
+
+;; --- Mutation: Update comment thread position
+
+(s/def ::update-comment-thread-position
+  (s/keys :req-un [::profile-id ::id ::position]))
+
+(sv/defmethod ::update-comment-thread-position
+  [{:keys [pool] :as cfg} {:keys [profile-id id position] :as params}]
+  (db/with-atomic [conn pool]
+    (let [_ (println "aaaaa" profile-id id position)
+          thread (db/get-by-id conn :comment-thread id {:for-update true})
+          _ (println "thread" (:position thread))]
+      (when-not (= (:owner-id thread) profile-id)
+        (ex/raise :type :validation
+                  :code :not-allowed))
+      (db/update! conn :comment-thread
+                  {:modified-at (dt/now)
+                   :position (db/pgpoint position)}
+                  {:id (:id thread)})
+      nil)))
