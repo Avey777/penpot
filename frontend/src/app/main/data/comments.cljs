@@ -249,6 +249,7 @@
   (ptk/reify ::close-comment-thread
     ptk/UpdateEvent
     (update [_ state]
+      (prn "entro en close thread")
       (-> state
           (update :comments-local dissoc :open :draft)
           (update :workspace-drawing dissoc :comment)))))

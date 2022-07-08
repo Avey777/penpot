@@ -29,6 +29,9 @@
     &.unread {
       background-color: $color-primary;
     }
+    span{
+      user-select: none;
+    }
   }
 
   .thread-content {

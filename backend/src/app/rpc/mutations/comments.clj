@@ -275,9 +275,7 @@
 (sv/defmethod ::update-comment-thread-position
   [{:keys [pool] :as cfg} {:keys [profile-id id position] :as params}]
   (db/with-atomic [conn pool]
-    (let [_ (println "aaaaa" profile-id id position)
-          thread (db/get-by-id conn :comment-thread id {:for-update true})
-          _ (println "thread" (:position thread))]
+    (let [thread (db/get-by-id conn :comment-thread id {:for-update true})]
       (when-not (= (:owner-id thread) profile-id)
         (ex/raise :type :validation
                   :code :not-allowed))

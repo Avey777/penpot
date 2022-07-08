@@ -30,9 +30,11 @@
 
         on-bubble-click
         (fn [{:keys [id] :as thread}]
-          (if (= (:open local) id)
-            (st/emit! (dcm/close-thread))
-            (st/emit! (dcm/open-thread thread))))
+          ;; (if (= (:open local) id)
+          ;;   (st/emit! (dcm/close-thread))
+          ;;   (st/emit! (dcm/open-thread thread)))
+          
+          )
 
         on-draft-cancel
         (mf/use-callback
