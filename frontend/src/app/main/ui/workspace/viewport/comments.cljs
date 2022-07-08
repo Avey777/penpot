@@ -15,7 +15,7 @@
    [rumext.alpha :as mf]))
 
 (mf/defc comments-layer
-  [{:keys [vbox vport zoom file-id page-id drawing] :as props}]
+  [{:keys [vbox vport zoom file-id page-id drawing hover-frame] :as props}]
   (let [pos-x       (* (- (:x vbox)) zoom)
         pos-y       (* (- (:y vbox)) zoom)
 
@@ -60,7 +60,8 @@
                                 :zoom zoom
                                 :on-click on-bubble-click
                                 :open? (= (:id item) (:open local))
-                                :key (:seqn item)}])
+                                :key (:seqn item)
+                                :hover-frame hover-frame}])
 
        (when-let [id (:open local)]
          (when-let [thread (get threads-map id)]

@@ -332,8 +332,8 @@
                              :new-position-y nil
                              :new-frame-id frame-id})
 
+        frame-id (:new-frame-id @state)
         frame-ref (mf/use-memo (mf/deps frame-id) #(refs/object-by-id frame-id))
-
         frame (mf/deref frame-ref)
 
         on-pointer-enter
@@ -363,7 +363,7 @@
          (mf/deps (select-keys @state [:new-position-x :new-position-y :new-frame-id]))
          (fn [_ thread]
            (on-buble-pos-update
-            (println "--------->" [(:new-position-x @state) (:new-position-y @state)])
+            (println "--------->" [(:new-position-x @state) (:new-position-y @state)] (:new-frame-id @state) )
             (st/emit! (dwcm/update-comment-thread-position thread [(:new-position-x @state) (:new-position-y @state)])))))
 
         on-lost-pointer-capture
@@ -385,12 +385,13 @@
                    delta-x (/ (- (:x current-pt) (:x start-pt)) zoom)
                    delta-y (/ (- (:y current-pt) (:y start-pt)) zoom)
 
-                  ;;  new-frame-id (:id (get-hover-frame))
-                   ]
+                   new-frame-id (:id (get-hover-frame))
+
+                   _ (println "TODO new-frame-id" (:name (get-hover-frame)))]
                (swap! state assoc
                       :new-position-x (+ (:x position) delta-x)
                       :new-position-y (+ (:y position) delta-y)
-                      :new-frame-id frame-id)))))]
+                      :new-frame-id new-frame-id)))))]
 
     {:on-pointer-enter on-pointer-enter
      :on-pointer-leave on-pointer-leave
@@ -403,13 +404,17 @@
 
 (mf/defc thread-bubble
   {::mf/wrap [mf/memo]}
-  [{:keys [thread zoom on-click ] :as params}]
+  [{:keys [thread zoom hover-frame on-click] :as params}]
   (let [pos   (:position thread)
-        get-hover-frame ()
+        hover-frame-ref (mf/use-ref nil)
+
+        get-hover-frame
+        (mf/use-callback
+         (fn []
+           (mf/ref-val hover-frame-ref)))
 
         on-buble-pos-update
         (fn [new_pos])
-
 
         {:keys [on-pointer-enter
                 on-pointer-leave
@@ -440,6 +445,12 @@
         on-mouse-move* (fn [event]
                          (dom/stop-propagation event)
                          (on-mouse-move event))]
+
+
+    (mf/use-effect
+     (mf/deps hover-frame)
+     (fn []
+       (mf/set-ref-val! hover-frame-ref hover-frame)))
 
     [:div.thread-bubble
      {:style {:top (str pos-y "px")

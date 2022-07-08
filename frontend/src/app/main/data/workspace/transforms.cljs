@@ -201,6 +201,7 @@
             (rx/of (dwu/start-undo-transaction))
             (rx/empty))
           (rx/of (dwg/move-frame-guides ids-with-children)
+                 ;; TODO: move thread comments
                  (dch/update-shapes
                   ids-with-children
                   (fn [shape]

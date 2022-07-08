@@ -201,7 +201,8 @@
                                      :zoom zoom
                                      :drawing drawing
                                      :page-id page-id
-                                     :file-id (:id file)}])
+                                     :file-id (:id file)
+                                     :hover-frame frame-parent}])
 
       (when picking-color?
         [:& pixel-overlay/pixel-overlay {:vport vport
