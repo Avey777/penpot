@@ -415,7 +415,7 @@
            (mf/ref-val hover-frame-ref)))
         
           
-        _ (println "------> thread-bubble" (:name hover-frame))
+        _ (println "------111> thread-bubble" (:name hover-frame))
 
         on-buble-pos-update
         (fn [new_pos])
@@ -428,6 +428,8 @@
                 state
                 on-lost-pointer-capture
                 frame]} (use-buble zoom get-hover-frame thread on-buble-pos-update)
+        
+        _ (println "------222> frame" (:name frame))
 
         pos-x (or (:new-position-x @state)
                   (* (:x pos) zoom))
