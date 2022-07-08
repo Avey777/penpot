@@ -456,7 +456,7 @@
     (mf/use-effect
      (mf/deps hover-frame)
      (fn []
-       (let [_ (println "mf/use-effect hover-frame" hover-frame)]
+       (let [_ (println "mf/use-effect hover-frame" (:name hover-frame))]
          (mf/set-ref-val! hover-frame-ref hover-frame))))
 
     [:div.thread-bubble
