@@ -333,6 +333,7 @@
                              :new-frame-id frame-id})
 
         frame-id (:new-frame-id @state)
+
         frame-ref (mf/use-memo (mf/deps frame-id) #(refs/object-by-id frame-id))
         frame (mf/deref frame-ref)
 
@@ -404,7 +405,7 @@
 
 (mf/defc thread-bubble
   {::mf/wrap [mf/memo]}
-  [{:keys [thread zoom hover-frame on-click] :as params}]
+  [{:keys [thread zoom hover-frame on-click]}]
   (let [pos   (:position thread)
         hover-frame-ref (mf/use-ref nil)
 
@@ -412,6 +413,9 @@
         (mf/use-callback
          (fn []
            (mf/ref-val hover-frame-ref)))
+        
+          
+        _ (println "------> thread-bubble" (:name hover-frame))
 
         on-buble-pos-update
         (fn [new_pos])
@@ -450,7 +454,8 @@
     (mf/use-effect
      (mf/deps hover-frame)
      (fn []
-       (mf/set-ref-val! hover-frame-ref hover-frame)))
+       (let [_ (println "mf/use-effect hover-frame" hover-frame)]
+         (mf/set-ref-val! hover-frame-ref hover-frame))))
 
     [:div.thread-bubble
      {:style {:top (str pos-y "px")
