@@ -323,7 +323,7 @@
        [:& reply-form {:thread thread}]])))
 
 (defn use-buble
-  [zoom hover-frame {:keys [id position frame-id]}]
+  [zoom {:keys [id position frame-id]}]
   (let [dragging-ref (mf/use-ref false)
         start-ref (mf/use-ref nil)
 
@@ -375,7 +375,7 @@
 
         on-mouse-move
         (mf/use-callback
-         (mf/deps position zoom hover-frame)
+         (mf/deps position zoom)
          (fn [event]
 
            (when-let [_ (mf/ref-val dragging-ref)]
@@ -383,12 +383,14 @@
                    current-pt (dom/get-client-position event)
                    delta-x (/ (- (:x current-pt) (:x start-pt)) zoom)
                    delta-y (/ (- (:y current-pt) (:y start-pt)) zoom)
-                   new-frame-id (:id hover-frame)
-                   _ (println "name dentro del on mouse move" (:name hover-frame))]
+                  ;;  new-frame-id (:id hover-frame)
+                  ;;  _ (println "name dentro del on mouse move" (:name hover-frame))
+                   ]
                (swap! state assoc
                       :new-position-x (+ (:x position) delta-x)
                       :new-position-y (+ (:y position) delta-y)
-                      :new-frame-id new-frame-id)))))]
+                      ;; :new-frame-id new-frame-id
+                      )))))]
 
     {:on-pointer-enter on-pointer-enter
      :on-pointer-leave on-pointer-leave
@@ -401,9 +403,8 @@
 
 (mf/defc thread-bubble
   {::mf/wrap [mf/memo]}
-  [{:keys [thread zoom open? hover-frame]}]
-  (let [_ (println "hover-frame en thread" (:name hover-frame))
-        pos   (:position thread)
+  [{:keys [thread zoom open?]}]
+  (let [pos   (:position thread)
         drag? (mf/use-ref nil)
         was-open? (mf/use-ref nil)
 
@@ -414,7 +415,7 @@
                 on-mouse-move
                 state
                 on-lost-pointer-capture
-                frame]} (use-buble zoom hover-frame thread)
+                frame]} (use-buble zoom thread)
         pos-x (or (:new-position-x @state)
                   (* (:x pos) zoom))
         pos-y (or (:new-position-y @state)

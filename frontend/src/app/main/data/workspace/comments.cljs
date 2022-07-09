@@ -6,10 +6,12 @@
 
 (ns app.main.data.workspace.comments
   (:require
+   [app.common.pages.helpers :as cph]
    [app.common.spec :as us]
    [app.main.data.comments :as dcm]
    [app.main.data.workspace :as dw]
    [app.main.data.workspace.common :as dwc]
+   [app.main.data.workspace.state-helpers :as wsh]
    [app.main.repo :as rp]
    [app.main.streams :as ms]
    [app.util.router :as rt]
@@ -108,13 +110,16 @@
   (ptk/reify ::update-comment-thread-position
     ptk/UpdateEvent
     (update [_ state]
-      (let [thread-id (:id thread)
-            _ (println ":::::::::::" (get-in state [:comment-threads thread-id :position]) {:x new-x :y new-y})]
+      (let [thread-id (:id thread)]
         (assoc-in state [:comment-threads thread-id :position] {:x new-x :y new-y})))
 
     ptk/WatchEvent
     (watch [_ state _]
-      (let [thread-id (:id thread)]
-        (->> (rp/mutation :update-comment-thread-position {:id thread-id :position {:x new-x :y new-y}})
+      (let [thread-id (:id thread)
+            page-id (:current-page-id state)
+            objects (wsh/lookup-page-objects state page-id)
+            new-frame-id (cph/frame-id-by-position objects {:x new-x :y new-y})
+            _ (println "------------->" new-frame-id)]
+        (->> (rp/mutation :update-comment-thread-position {:id thread-id :position {:x new-x :y new-y} :frame-id new-frame-id})
              (rx/catch #(rx/throw {:type :update-comment-thread-position}))
              (rx/ignore))))))

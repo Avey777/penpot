@@ -269,11 +269,13 @@
 
 ;; --- Mutation: Update comment thread position
 
+(s/def ::frame-id ::us/uuid)
+
 (s/def ::update-comment-thread-position
-  (s/keys :req-un [::profile-id ::id ::position]))
+  (s/keys :req-un [::profile-id ::id ::position ::frame-id]))
 
 (sv/defmethod ::update-comment-thread-position
-  [{:keys [pool] :as cfg} {:keys [profile-id id position] :as params}]
+  [{:keys [pool] :as cfg} {:keys [profile-id id position frame-id] :as params}]
   (db/with-atomic [conn pool]
     (let [thread (db/get-by-id conn :comment-thread id {:for-update true})]
       (when-not (= (:owner-id thread) profile-id)
@@ -281,6 +283,7 @@
                   :code :not-allowed))
       (db/update! conn :comment-thread
                   {:modified-at (dt/now)
-                   :position (db/pgpoint position)}
+                   :position (db/pgpoint position)
+                   :frame-id frame-id}
                   {:id (:id thread)})
       nil)))
